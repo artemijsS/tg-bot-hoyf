@@ -1,10 +1,10 @@
 import { Ctx, Hears, Scene, SceneEnter } from "nestjs-telegraf";
 import { UserService } from "../../user/user.service";
-import { Context } from "telegraf";
 import { sendError } from "../utils/errors";
+import { ScenesE } from "../enums/scenes.enum";
 
 
-@Scene('registration')
+@Scene(ScenesE.registration)
 export class RegistrationScene {
 
     constructor(private userService: UserService) {
@@ -14,7 +14,7 @@ export class RegistrationScene {
     async onEnter(@Ctx() ctx: any) {
         if (await this.userService.getByChatId(ctx.chat.id)) {
             await ctx.reply('You are already registered!');
-            ctx.scene.enter('menuScene');
+            ctx.scene.enter(ScenesE.services);
             return;
         }
 
@@ -53,7 +53,7 @@ export class RegistrationScene {
                     })
 
                     await ctx.reply(`Name - ${ctx.session.name}\nSurname - ${ctx.session.surname}\nEmail - ${ctx.session.email}\n\nThank You!`);
-                    ctx.scene.enter('menuScene');
+                    ctx.scene.enter(ScenesE.services);
                 } catch (e) {
                     await sendError(ctx, e.message);
                     ctx.scene.reenter();

@@ -1,25 +1,27 @@
 import { Ctx, Hears, Scene, SceneEnter } from "nestjs-telegraf";
 import { Markup } from "telegraf";
+import { ScenesE } from "../enums/scenes.enum";
+import { NavigationE } from "../enums/navigation.enum";
 
 
-@Scene('menuScene')
+@Scene(ScenesE.menu)
 export class MenuScene {
 
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
         await ctx.reply('Menu \n\n Choose operation', Markup.keyboard([
-            'Select service',
-            'Settings'
+            NavigationE.services,
+            NavigationE.settings
         ]).resize(true));
     }
 
-    @Hears('Settings')
+    @Hears(NavigationE.settings)
     async settings(@Ctx() ctx: any) {
-        ctx.scene.enter('settingsScene');
+        ctx.scene.enter(ScenesE.settings);
     }
 
-    @Hears('Select service')
+    @Hears(NavigationE.services)
     async services(@Ctx() ctx: any) {
-        ctx.scene.enter('showServicesScene');
+        ctx.scene.enter(ScenesE.services);
     }
 }
