@@ -5,4 +5,5 @@ export enum NavigationE {
     services = "Выбрать услугу",
     close = "Закрыть",
     changeUserInfo = "Изменить информацию",
+    writeToUs = "Написать нам",
 }

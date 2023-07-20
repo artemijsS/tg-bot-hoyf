@@ -4,4 +4,5 @@ export enum ScenesE {
     registration = "registration",
     menu = "menuScene",
     changeInfoScene = "changeInfoScene",
+    writeToUs = "writeToUsScene",
 }

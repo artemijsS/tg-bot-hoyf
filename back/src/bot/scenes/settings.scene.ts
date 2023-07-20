@@ -12,7 +12,7 @@ export class SettingsScene {
         await ctx.reply('How can I help You?', Markup.keyboard([
             [
                 NavigationE.changeUserInfo,
-                'About Us'
+                NavigationE.writeToUs
             ],
             [
                 NavigationE.menu
@@ -23,6 +23,11 @@ export class SettingsScene {
     @Hears(NavigationE.changeUserInfo)
     async changeInfo(@Ctx() ctx: any) {
         ctx.scene.enter(ScenesE.changeInfoScene);
+    }
+
+    @Hears(NavigationE.writeToUs)
+    async writeToUs(@Ctx() ctx: any) {
+        ctx.scene.enter(ScenesE.writeToUs);
     }
 
     @Hears(NavigationE.menu)

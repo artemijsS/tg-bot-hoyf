@@ -24,8 +24,13 @@ export class UserService {
     return user;
   }
 
-  async getByChatId(chatId: number) {
-    return this.userModel.findOne({ chatId: chatId });
+  async getByChatId(chatId: number): Promise<User> {
+    return this.userModel.findOne({ chatId: chatId }).exec();
+  }
+
+  async getAdminChatIds(): Promise<number[]> {
+    const admins = await this.userModel.find({ role: "admin" }).exec();
+    return admins.map((admin: User) => admin.chatId);
   }
 
   async validation<T extends object>(dtoClass: new () => T, dto: any): Promise<T> {

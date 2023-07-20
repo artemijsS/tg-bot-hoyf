@@ -9,6 +9,7 @@ import { ChangeInfoScene } from "./scenes/settings/changeInfo.scene";
 import { SettingsScene } from "./scenes/settings.scene";
 import { UserModule } from "../user/user.module";
 import { ShowServicesScene } from "./scenes/services/showServices.scene";
+import { WriteToUsScene } from "./scenes/settings/writeToUs.scene";
 
 const sessions = new LocalSession({ database: 'session_db.json' })
 
@@ -32,7 +33,8 @@ const sessions = new LocalSession({ database: 'session_db.json' })
         MenuScene,
         ChangeInfoScene,
         SettingsScene,
-        ShowServicesScene
+        ShowServicesScene,
+        WriteToUsScene
     ]
 })
 export class TelegramModule {}
