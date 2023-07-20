@@ -2,8 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TelegramUpdate } from "./telegram.update";
 import { TelegrafModule } from "nestjs-telegraf";
-import { RegistrationScene } from "./registration.scene";
+import { RegistrationScene } from "./scenes/registration.scene";
 import * as LocalSession from "telegraf-session-local";
+import { MenuScene } from "./scenes/menu.scene";
+import { ChangeInfoScene } from "./scenes/changeInfo.scene";
+import { SettingsScene } from "./scenes/settings.scene";
+import { UserModule } from "../user/user.module";
+import { ShowServicesScene } from "./scenes/services/showServices.scene";
 
 const sessions = new LocalSession({ database: 'session_db.json' })
 
@@ -18,8 +23,16 @@ const sessions = new LocalSession({ database: 'session_db.json' })
             }),
             inject: [ConfigService],
         }),
+        UserModule
     ],
     controllers: [],
-    providers: [TelegramUpdate, RegistrationScene]
+    providers: [
+        TelegramUpdate,
+        RegistrationScene,
+        MenuScene,
+        ChangeInfoScene,
+        SettingsScene,
+        ShowServicesScene
+    ]
 })
 export class TelegramModule {}
