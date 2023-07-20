@@ -3,15 +3,19 @@ import { Markup } from "telegraf";
 import { ScenesE } from "../../enums/scenes.enum";
 import { NavigationE } from "../../enums/navigation.enum";
 import { SettingsE } from "../../enums/settings.enum";
+import { UserService } from "../../../user/user.service";
 
 
 @Scene(ScenesE.changeInfoScene)
 export class ChangeInfoScene {
 
+    constructor(private userService: UserService) {}
+
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
         ctx.session.state = 'DONE';
-        await ctx.reply(`What do you want to change?\n\nName - ${ctx.session.name}\nSurname - ${ctx.session.surname}\nEmail - ${ctx.session.email}`,
+        const user = await this.userService.getByChatId(ctx.chat.id);
+        await ctx.reply(`What do you want to change?\n\nName - ${user.name}\nSurname - ${user.lastname}\nEmail - ${user.email}`,
             Markup.keyboard([
             [
                 SettingsE.changeName,
