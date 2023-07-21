@@ -16,12 +16,12 @@ export class WriteToUsScene {
     async onEnter(@Ctx() ctx: any) {
         await ctx.reply('Напишите сообщение которое хотите отправить нам!', Markup.keyboard([
             [
-                NavigationE.back
+                NavigationE.settings
             ]
         ]).resize(true));
     }
 
-    @Hears(NavigationE.back)
+    @Hears(NavigationE.settings)
     async back(@Ctx() ctx: any) {
         ctx.scene.enter(ScenesE.settings);
     }
