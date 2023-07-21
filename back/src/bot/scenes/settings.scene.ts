@@ -9,7 +9,7 @@ export class SettingsScene {
 
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
-        await ctx.reply('How can I help You?', Markup.keyboard([
+        await ctx.reply('Чем я могу помочь?', Markup.keyboard([
             [
                 NavigationE.changeUserInfo,
                 NavigationE.writeToUs

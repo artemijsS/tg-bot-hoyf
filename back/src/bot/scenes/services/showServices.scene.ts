@@ -9,7 +9,7 @@ export class ShowServicesScene {
 
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
-        await ctx.reply(`What do you want to do?`,
+        await ctx.reply(`Что вас интересует?`,
             Markup.keyboard([
                 [
                     '1 asdas',

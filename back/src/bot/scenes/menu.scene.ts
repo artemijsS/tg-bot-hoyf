@@ -9,7 +9,7 @@ export class MenuScene {
 
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
-        await ctx.reply('Menu \n\n Choose operation', Markup.keyboard([
+        await ctx.reply('Меню \n\n Выберете желаемое действие', Markup.keyboard([
             NavigationE.services,
             NavigationE.settings
         ]).resize(true));
