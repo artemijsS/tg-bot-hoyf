@@ -5,6 +5,9 @@ import { Model } from "mongoose";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { validate } from 'class-validator';
 import { ClassConstructor, plainToClass, plainToInstance } from "class-transformer";
+import { ChangeNameDto } from "./dto/changeName.dto";
+import { ChangeLastNameDto } from "./dto/changeLastName.dto";
+import { ChangeEmailDto } from "./dto/changeEmail.dto";
 
 
 @Injectable()
@@ -31,6 +34,21 @@ export class UserService {
   async getAdminChatIds(): Promise<number[]> {
     const admins = await this.userModel.find({ role: "admin" }).exec();
     return admins.map((admin: User) => admin.chatId);
+  }
+
+  async changeName(changeNameDto: ChangeNameDto) {
+    await this.validation(ChangeNameDto, changeNameDto);
+    return this.userModel.findOneAndUpdate({ chatId: changeNameDto.chatId }, { name: changeNameDto.name }).select('-password');
+  }
+
+  async changeLastname(changeLastNameDto: ChangeLastNameDto) {
+    await this.validation(ChangeLastNameDto, changeLastNameDto);
+    return this.userModel.findOneAndUpdate({ chatId: changeLastNameDto.chatId }, { lastname: changeLastNameDto.lastname }).select('-password');
+  }
+
+  async changeEmail(changeEmailDto: ChangeEmailDto) {
+    await this.validation(ChangeEmailDto, changeEmailDto);
+    return this.userModel.findOneAndUpdate({ chatId: changeEmailDto.chatId }, { email: changeEmailDto.email }).select('-password');
   }
 
   async validation<T extends object>(dtoClass: new () => T, dto: any): Promise<T> {

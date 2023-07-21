@@ -4,6 +4,7 @@ import { ScenesE } from "../../enums/scenes.enum";
 import { NavigationE } from "../../enums/navigation.enum";
 import { SettingsE } from "../../enums/settings.enum";
 import { UserService } from "../../../user/user.service";
+import { sendError } from "../../utils/errors";
 
 
 @Scene(ScenesE.changeInfoScene)
@@ -15,7 +16,7 @@ export class ChangeInfoScene {
     async onEnter(@Ctx() ctx: any) {
         ctx.session.state = 'DONE';
         const user = await this.userService.getByChatId(ctx.chat.id);
-        await ctx.reply(`What do you want to change?\n\nName - ${user.name}\nSurname - ${user.lastname}\nEmail - ${user.email}`,
+        await ctx.reply(`Что вы хотите поменять?\n\nИмя - ${user.name}\nФамилия - ${user.lastname}\nEmail - ${user.email}`,
             Markup.keyboard([
             [
                 SettingsE.changeName,
@@ -29,19 +30,19 @@ export class ChangeInfoScene {
     @Hears(SettingsE.changeName)
     async changeName(@Ctx() ctx: any) {
         ctx.session.state = "CHANGENAME";
-        ctx.reply("Enter Your name:", Markup.keyboard([NavigationE.close]).resize(true));
+        ctx.reply("Напишите свое имя:", Markup.keyboard([NavigationE.close]).resize(true));
     }
 
     @Hears(SettingsE.changeLastname)
     async changeSurname(@Ctx() ctx: any) {
         ctx.session.state = "CHANGESURNAME";
-        ctx.reply("Enter Your surname:", Markup.keyboard([NavigationE.close]).resize(true));
+        ctx.reply("Напишите свою фамилию:", Markup.keyboard([NavigationE.close]).resize(true));
     }
 
     @Hears(SettingsE.changeEmail)
     async changeEmail(@Ctx() ctx: any) {
         ctx.session.state = "CHANGEEMAIL";
-        ctx.reply("Enter Your email:", Markup.keyboard([NavigationE.close]).resize(true));
+        ctx.reply("Напишите свой email:", Markup.keyboard([NavigationE.close]).resize(true));
     }
 
     @Hears(NavigationE.back)
@@ -59,19 +60,46 @@ export class ChangeInfoScene {
         const currentState = ctx.session.state
         switch (currentState) {
             case "CHANGENAME":
-                ctx.session.name = ctx.message.text;
-                ctx.session.state = 'DONE';
-                ctx.scene.reenter();
+                try {
+                    await this.userService.changeName({
+                        chatId: ctx.chat.id,
+                        name: ctx.message.text
+                    })
+                    ctx.session.name = ctx.message.text;
+                    ctx.session.state = 'DONE';
+                    ctx.scene.reenter();
+                } catch (e) {
+                    await sendError(ctx, e.message);
+                    await this.changeName(ctx);
+                }
                 return;
             case "CHANGESURNAME":
-                ctx.session.surname = ctx.message.text;
-                ctx.session.state = 'DONE';
-                ctx.scene.reenter();
+                try {
+                    await this.userService.changeLastname({
+                        chatId: ctx.chat.id,
+                        lastname: ctx.message.text
+                    })
+                    ctx.session.lastname = ctx.message.text;
+                    ctx.session.state = 'DONE';
+                    ctx.scene.reenter();
+                } catch (e) {
+                    await sendError(ctx, e.message);
+                    await this.changeSurname(ctx);
+                }
                 return;
             case "CHANGEEMAIL":
-                ctx.session.email = ctx.message.text;
-                ctx.session.state = 'DONE';
-                ctx.scene.reenter();
+                try {
+                    await this.userService.changeEmail({
+                        chatId: ctx.chat.id,
+                        email: ctx.message.text
+                    })
+                    ctx.session.email = ctx.message.text;
+                    ctx.session.state = 'DONE';
+                    ctx.scene.reenter();
+                } catch (e) {
+                    await sendError(ctx, e.message);
+                    await this.changeEmail(ctx);
+                }
                 return;
             default:
                 return;
