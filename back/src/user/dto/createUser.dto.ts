@@ -9,15 +9,15 @@ export class CreateUserDto {
     username: string;
 
     @IsString()
-    @MinLength(2)
+    @MinLength(2, { message: 'Имя не может быть короче 2 символов' })
     name: string;
 
     @IsString()
-    @MinLength(2)
+    @MinLength(2, { message: 'Фамилия не может быть короче 2 символов' })
     lastname: string;
 
     @IsString()
-    @IsEmail({}, { message: 'Invalid email format' })
+    @IsEmail({}, { message: 'Неправильный формат почты' })
     email: string;
 
 }

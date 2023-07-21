@@ -5,6 +5,8 @@ import { NavigationE } from "../../enums/navigation.enum";
 import { SettingsE } from "../../enums/settings.enum";
 import { UserService } from "../../../user/user.service";
 import { sendError } from "../../utils/errors";
+import { checkAuth } from "../../utils/auth.guard";
+import { sendSuccess } from "../../utils/success";
 
 
 @Scene(ScenesE.changeInfoScene)
@@ -15,6 +17,7 @@ export class ChangeInfoScene {
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
         ctx.session.state = 'DONE';
+        if (!await checkAuth(ctx, this.userService)) return;
         const user = await this.userService.getByChatId(ctx.chat.id);
         await ctx.reply(`Что вы хотите поменять?\n\nИмя - ${user.name}\nФамилия - ${user.lastname}\nEmail - ${user.email}`,
             Markup.keyboard([
@@ -67,6 +70,7 @@ export class ChangeInfoScene {
                     })
                     ctx.session.name = ctx.message.text;
                     ctx.session.state = 'DONE';
+                    await sendSuccess(ctx, "Имя успешно изменено!");
                     ctx.scene.reenter();
                 } catch (e) {
                     await sendError(ctx, e.message);
@@ -81,6 +85,7 @@ export class ChangeInfoScene {
                     })
                     ctx.session.lastname = ctx.message.text;
                     ctx.session.state = 'DONE';
+                    await sendSuccess(ctx, "Фамилия успешно изменена!");
                     ctx.scene.reenter();
                 } catch (e) {
                     await sendError(ctx, e.message);
@@ -95,6 +100,7 @@ export class ChangeInfoScene {
                     })
                     ctx.session.email = ctx.message.text;
                     ctx.session.state = 'DONE';
+                    await sendSuccess(ctx, "Email успешно изменен!");
                     ctx.scene.reenter();
                 } catch (e) {
                     await sendError(ctx, e.message);

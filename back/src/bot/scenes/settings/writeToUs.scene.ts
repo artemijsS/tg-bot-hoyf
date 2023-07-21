@@ -4,6 +4,9 @@ import { ScenesE } from "../../enums/scenes.enum";
 import { NavigationE } from "../../enums/navigation.enum";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../../../user/user.service";
+import { checkAuth } from "../../utils/auth.guard";
+import { sendSuccess } from "../../utils/success";
+import { sendError } from "../../utils/errors";
 
 
 @Scene(ScenesE.writeToUs)
@@ -14,6 +17,7 @@ export class WriteToUsScene {
 
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
+        if (!await checkAuth(ctx, this.userService)) return;
         await ctx.reply('Напишите сообщение которое хотите отправить нам!', Markup.keyboard([
             [
                 NavigationE.settings
@@ -35,9 +39,9 @@ export class WriteToUsScene {
                 await ctx.telegram.sendMessage(adminId, "Новое сообщение от\n\n" + user.name + " " + user.lastname + "\n" + user.email + "\n@" + user.username);
                 await ctx.forwardMessage(adminId);
             }
-            await ctx.reply("Сообщение успешно отправлено!");
+            await sendSuccess(ctx, "Сообщение успешно отправлено!");
         } catch (e) {
-            await ctx.reply("Ошибка с отправлением Вашего сообщения, напишите пожалуйста нам на почту - " + this.configService.get("COMPANY_EMAIL"));
+            await sendError(ctx, "Ошибка с отправлением Вашего сообщения, напишите пожалуйста нам на почту - " + this.configService.get("COMPANY_EMAIL"));
             console.log(e)
         } finally {
             await this.back(ctx);

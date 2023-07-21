@@ -2,45 +2,50 @@ import { Ctx, Hears, Scene, SceneEnter } from "nestjs-telegraf";
 import { Markup } from "telegraf";
 import { NavigationE } from "../../enums/navigation.enum";
 import { ScenesE } from "../../enums/scenes.enum";
+import { UserService } from "../../../user/user.service";
+import { checkAuth } from "../../utils/auth.guard";
 
 
 @Scene(ScenesE.services)
 export class ShowServicesScene {
 
+    constructor(private userService: UserService) {}
+
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
+        if (!await checkAuth(ctx, this.userService)) return;
         await ctx.reply(`Что вас интересует?`,
             Markup.keyboard([
                 [
-                    '1 asdas',
-                    '2 asd asd',
+                    'Услуга 1',
+                    'Услуга 2',
                 ],
                 [
-                    '4 asdaklsdjlkas',
-                    '5 asdaklsdjlkas',
+                    'Услуга 3',
+                    'Услуга 4',
                 ],
                 [
-                    '7 asdaklsdjlkas',
-                    '8 asdaklsdjlkas',
+                    'Услуга 5',
+                    'Услуга 6',
                 ],
                 [
-                    '7 asdaklsdjlkas',
-                    '8 asdaklsdjlkas',
+                    'Услуга 7',
+                    'Услуга 8',
                 ],
                 [
-                    '7 asdaklsdjlkas',
-                    '8 asdaklsdjlkas',
+                    'Услуга 9',
+                    'Услуга 10',
                 ],
                 [
-                    '7 asdaklsdjlkas',
-                    '8 asdaklsdjlkas',
+                    'Услуга 11',
+                    'Услуга 12',
                 ],
                 [
-                    '7 asdaklsdjlkas',
-                    '8 asdaklsdjlkas',
+                    'Услуга 13',
+                    'Услуга 14',
                 ],
                 [
-                    '7 asdaklsdjlkas',
+                    'Услуга 15',
                 ],
                 [NavigationE.menu]
             ]).resize(true));

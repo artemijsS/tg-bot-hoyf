@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Ctx, Start, InjectBot, Update, Hears } from 'nestjs-telegraf';
-import { Telegraf, Context } from 'telegraf';
+import { Telegraf, Context, Markup } from 'telegraf';
 import { SceneContextScene } from "telegraf/typings/scenes";
 import { ScenesE } from "./enums/scenes.enum";
 
@@ -11,6 +11,7 @@ export class TelegramUpdate {
 
     @Start()
     async onStart(@Ctx() ctx: Context) {
+        await ctx.reply('Здравствуйте!');
         //@ts-ignore
         const scene = ctx.scene as SceneContextScene
         await scene.enter(ScenesE.registration)

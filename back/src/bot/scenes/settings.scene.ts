@@ -2,13 +2,18 @@ import { Ctx, Hears, Scene, SceneEnter } from "nestjs-telegraf";
 import { Markup } from "telegraf";
 import { ScenesE } from "../enums/scenes.enum";
 import { NavigationE } from "../enums/navigation.enum";
+import { UserService } from "../../user/user.service";
+import { checkAuth } from "../utils/auth.guard";
 
 
 @Scene(ScenesE.settings)
 export class SettingsScene {
 
+    constructor(private userService: UserService) {}
+
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
+        if (!await checkAuth(ctx, this.userService)) return;
         await ctx.reply('Чем я могу помочь?', Markup.keyboard([
             [
                 NavigationE.changeUserInfo,

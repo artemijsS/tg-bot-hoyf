@@ -56,7 +56,7 @@ export class UserService {
     const errors = await validate(dtoCheck);
 
     if (errors.length > 0) {
-      const errorMessage = Object.values(errors[0].constraints).join(', ');
+      const errorMessage = errors.map(error => Object.values(error.constraints)).join('\n');
       throw new BadRequestException(errorMessage);
     }
 

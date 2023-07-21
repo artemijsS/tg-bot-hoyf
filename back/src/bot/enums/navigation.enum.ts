@@ -6,4 +6,5 @@ export enum NavigationE {
     close = "❌ Закрыть ❌",
     changeUserInfo = "Изменить информацию",
     writeToUs = "Написать нам",
+    restart = "❌ Начать с начала ❌",
 }

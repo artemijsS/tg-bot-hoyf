@@ -2,24 +2,33 @@ import { Ctx, Hears, Scene, SceneEnter } from "nestjs-telegraf";
 import { UserService } from "../../user/user.service";
 import { sendError } from "../utils/errors";
 import { ScenesE } from "../enums/scenes.enum";
+import { Markup } from "telegraf";
+import { NavigationE } from "../enums/navigation.enum";
 
 
 @Scene(ScenesE.registration)
 export class RegistrationScene {
 
-    constructor(private userService: UserService) {
-    }
+    constructor(private userService: UserService) {}
 
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
+
         if (await this.userService.getByChatId(ctx.chat.id)) {
-            await ctx.reply('You are already registered!');
+            await ctx.reply('Вы уже заргистрированы');
             ctx.scene.enter(ScenesE.services);
             return;
         }
 
         ctx.session.state = 'NAME';
-        await ctx.reply('Please enter your name:');
+        await ctx.reply('Необходимо зарегестрироватся\n\nВведите пожалуйста имя:', Markup.keyboard([
+            NavigationE.restart
+        ]).resize(true));
+    }
+
+    @Hears(NavigationE.restart)
+    async restart(@Ctx() ctx: any) {
+        ctx.scene.reenter();
     }
 
     @Hears(/.+/)
@@ -29,12 +38,12 @@ export class RegistrationScene {
             case "NAME":
                 ctx.session.name = ctx.message.text;
                 ctx.session.state = 'SURNAME';
-                await ctx.reply(`Thank you, ${ctx.message.text}. Now, please enter your surname:`);
+                await ctx.replyWithHTML(`Имя - <b>${ctx.message.text}</b>\n\nВведите пожалуйста фамилию:`);
                 return;
             case "SURNAME":
                 ctx.session.lastname = ctx.message.text;
                 ctx.session.state = 'EMAIL';
-                await ctx.reply(`Thank you, ${ctx.session.name} ${ctx.message.text}. Now, please enter your email:`);
+                await ctx.replyWithHTML(`Имя - <b>${ctx.session.name}</b>\nФамилия - <b>${ctx.message.text}</b>\n\nПоследнее, пожалуйста введите email:`);
                 return;
             case "EMAIL":
                 ctx.session.email = ctx.message.text;
@@ -44,7 +53,7 @@ export class RegistrationScene {
                 const username = ctx.from.username;
 
                 try {
-                    await this.userService.createUser({
+                    const user = await this.userService.createUser({
                         name,
                         lastname,
                         email,
@@ -52,7 +61,7 @@ export class RegistrationScene {
                         username
                     })
 
-                    await ctx.reply(`Name - ${ctx.session.name}\nSurname - ${ctx.session.surname}\nEmail - ${ctx.session.email}\n\nThank You!`);
+                    await ctx.replyWithHTML(`Имя - <b>${user.name}</b>\nФамилия - <b>${user.lastname}</b>\nEmail - <b>${user.email}</b>\n\nСпасибо за регистрацию!`);
                     ctx.scene.enter(ScenesE.services);
                 } catch (e) {
                     await sendError(ctx, e.message);
