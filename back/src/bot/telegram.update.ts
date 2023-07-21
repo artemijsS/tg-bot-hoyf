@@ -37,4 +37,11 @@ export class TelegramUpdate {
         const scene = ctx.scene as SceneContextScene
         await scene.enter(ScenesE.writeToUs)
     }
+
+    @Hears('/services')
+    async onServices(@Ctx() ctx: Context) {
+        //@ts-ignore
+        const scene = ctx.scene as SceneContextScene
+        await scene.enter(ScenesE.services)
+    }
 }
