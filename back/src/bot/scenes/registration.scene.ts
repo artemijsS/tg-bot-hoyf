@@ -37,31 +37,25 @@ export class RegistrationScene {
         switch (currentState) {
             case "NAME":
                 ctx.session.name = ctx.message.text;
-                ctx.session.state = 'SURNAME';
-                await ctx.replyWithHTML(`Имя - <b>${ctx.message.text}</b>\n\nВведите пожалуйста фамилию:`);
-                return;
-            case "SURNAME":
-                ctx.session.lastname = ctx.message.text;
                 ctx.session.state = 'EMAIL';
-                await ctx.replyWithHTML(`Имя - <b>${ctx.session.name}</b>\nФамилия - <b>${ctx.message.text}</b>\n\nПоследнее, пожалуйста введите email:`);
+                await ctx.replyWithHTML(`Имя - <b>${ctx.message.text}</b>\n\nВведите пожалуйста email:`);
                 return;
             case "EMAIL":
                 ctx.session.email = ctx.message.text;
                 ctx.session.state = 'DONE';
-                const { name, lastname, email } = ctx.session;
+                const { name, email } = ctx.session;
                 const chatId = ctx.chat.id;
                 const username = ctx.from.username;
 
                 try {
                     const user = await this.userService.createUser({
                         name,
-                        lastname,
                         email,
                         chatId,
                         username
                     })
 
-                    await ctx.replyWithHTML(`Имя - <b>${user.name}</b>\nФамилия - <b>${user.lastname}</b>\nEmail - <b>${user.email}</b>\n\nСпасибо за регистрацию!`);
+                    await ctx.replyWithHTML(`Имя - <b>${user.name}</b>\nEmail - <b>${user.email}</b>\n\nСпасибо за регистрацию!`);
                     ctx.scene.enter(ScenesE.services);
                 } catch (e) {
                     await sendError(ctx, e.message);

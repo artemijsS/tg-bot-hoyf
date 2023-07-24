@@ -36,7 +36,7 @@ export class WriteToUsScene {
             const user = await this.userService.getByChatId(ctx.chat.id);
             const adminsIds = await this.userService.getAdminChatIds();
             for (const adminId of adminsIds) {
-                await ctx.telegram.sendMessage(adminId, "Новое сообщение от\n\n" + user.name + " " + user.lastname + "\n" + user.email + "\n@" + user.username);
+                await ctx.telegram.sendMessage(adminId, "Новое сообщение от\n\n" + user.name + "\n" + user.email + "\n@" + user.username);
                 await ctx.forwardMessage(adminId);
             }
             await sendSuccess(ctx, "Сообщение успешно отправлено!");

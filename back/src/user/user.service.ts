@@ -4,9 +4,8 @@ import { User } from './schema/user.schema';
 import { Model } from "mongoose";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { validate } from 'class-validator';
-import { ClassConstructor, plainToClass, plainToInstance } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { ChangeNameDto } from "./dto/changeName.dto";
-import { ChangeLastNameDto } from "./dto/changeLastName.dto";
 import { ChangeEmailDto } from "./dto/changeEmail.dto";
 
 
@@ -39,11 +38,6 @@ export class UserService {
   async changeName(changeNameDto: ChangeNameDto) {
     await this.validation(ChangeNameDto, changeNameDto);
     return this.userModel.findOneAndUpdate({ chatId: changeNameDto.chatId }, { name: changeNameDto.name }).select('-password');
-  }
-
-  async changeLastname(changeLastNameDto: ChangeLastNameDto) {
-    await this.validation(ChangeLastNameDto, changeLastNameDto);
-    return this.userModel.findOneAndUpdate({ chatId: changeLastNameDto.chatId }, { lastname: changeLastNameDto.lastname }).select('-password');
   }
 
   async changeEmail(changeEmailDto: ChangeEmailDto) {

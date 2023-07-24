@@ -19,11 +19,10 @@ export class ChangeInfoScene {
         ctx.session.state = 'DONE';
         if (!await checkAuth(ctx, this.userService)) return;
         const user = await this.userService.getByChatId(ctx.chat.id);
-        await ctx.reply(`Что вы хотите поменять?\n\nИмя - ${user.name}\nФамилия - ${user.lastname}\nEmail - ${user.email}`,
+        await ctx.reply(`Что вы хотите поменять?\n\nИмя - ${user.name}\nEmail - ${user.email}`,
             Markup.keyboard([
             [
                 SettingsE.changeName,
-                SettingsE.changeLastname,
                 SettingsE.changeEmail,
             ],
             [NavigationE.back]
@@ -34,12 +33,6 @@ export class ChangeInfoScene {
     async changeName(@Ctx() ctx: any) {
         ctx.session.state = "CHANGENAME";
         ctx.reply("Напишите свое имя:", Markup.keyboard([NavigationE.close]).resize(true));
-    }
-
-    @Hears(SettingsE.changeLastname)
-    async changeSurname(@Ctx() ctx: any) {
-        ctx.session.state = "CHANGESURNAME";
-        ctx.reply("Напишите свою фамилию:", Markup.keyboard([NavigationE.close]).resize(true));
     }
 
     @Hears(SettingsE.changeEmail)
@@ -75,21 +68,6 @@ export class ChangeInfoScene {
                 } catch (e) {
                     await sendError(ctx, e.message);
                     await this.changeName(ctx);
-                }
-                return;
-            case "CHANGESURNAME":
-                try {
-                    await this.userService.changeLastname({
-                        chatId: ctx.chat.id,
-                        lastname: ctx.message.text
-                    })
-                    ctx.session.lastname = ctx.message.text;
-                    ctx.session.state = 'DONE';
-                    await sendSuccess(ctx, "Фамилия успешно изменена!");
-                    ctx.scene.reenter();
-                } catch (e) {
-                    await sendError(ctx, e.message);
-                    await this.changeSurname(ctx);
                 }
                 return;
             case "CHANGEEMAIL":
