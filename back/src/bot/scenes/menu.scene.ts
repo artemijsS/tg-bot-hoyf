@@ -14,7 +14,7 @@ export class MenuScene {
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
         if (!await checkAuth(ctx, this.userService)) return;
-        await ctx.reply('Меню \n\n Выберете желаемое действие', Markup.keyboard([
+        await ctx.reply('🔹 Меню 🔹', Markup.keyboard([
             NavigationE.services,
             NavigationE.settings
         ]).resize(true));

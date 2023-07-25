@@ -10,6 +10,8 @@ import { SettingsScene } from "./scenes/settings.scene";
 import { UserModule } from "../user/user.module";
 import { ShowServicesScene } from "./scenes/services/showServices.scene";
 import { WriteToUsScene } from "./scenes/settings/writeToUs.scene";
+import { CreateApplicationScene } from "./scenes/services/createApplication.scene";
+import { ApplicationModule } from "../application/application.module";
 
 const sessions = new LocalSession({ database: 'session_db.json' })
 
@@ -24,7 +26,8 @@ const sessions = new LocalSession({ database: 'session_db.json' })
             }),
             inject: [ConfigService],
         }),
-        UserModule
+        UserModule,
+        ApplicationModule
     ],
     controllers: [],
     providers: [
@@ -34,7 +37,8 @@ const sessions = new LocalSession({ database: 'session_db.json' })
         ChangeInfoScene,
         SettingsScene,
         ShowServicesScene,
-        WriteToUsScene
+        WriteToUsScene,
+        CreateApplicationScene
     ]
 })
 export class TelegramModule {}

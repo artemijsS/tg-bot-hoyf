@@ -4,6 +4,7 @@ import { NavigationE } from "../../enums/navigation.enum";
 import { ScenesE } from "../../enums/scenes.enum";
 import { UserService } from "../../../user/user.service";
 import { checkAuth } from "../../utils/auth.guard";
+import { ServicesE } from "../../enums/services.enum";
 
 
 @Scene(ScenesE.services)
@@ -17,38 +18,38 @@ export class ShowServicesScene {
         await ctx.reply(`Какая услуга необходима?`,
             Markup.keyboard([
                 [
-                    'Услуга 1',
-                    'Услуга 2',
+                    ServicesE.companyRegistration,
                 ],
                 [
-                    'Услуга 3',
-                    'Услуга 4',
+                    ServicesE.companyTransfer,
                 ],
                 [
-                    'Услуга 5',
-                    'Услуга 6',
+                    ServicesE.financialStatements,
                 ],
                 [
-                    'Услуга 7',
-                    'Услуга 8',
+                    ServicesE.additionalDocuments,
                 ],
                 [
-                    'Услуга 9',
-                    'Услуга 10',
+                    ServicesE.vatNumber,
+                    ServicesE.helpAccountIBAN,
                 ],
                 [
-                    'Услуга 11',
-                    'Услуга 12',
-                ],
-                [
-                    'Услуга 13',
-                    'Услуга 14',
-                ],
-                [
-                    'Услуга 15',
+                    ServicesE.helpAccountMerchant,
+                    ServicesE.residencePermit,
                 ],
                 [NavigationE.menu]
             ]).resize(true));
+    }
+
+    @Hears(ServicesE.companyRegistration)
+    async companyRegistration(@Ctx() ctx: any) {
+        ctx.scene.reenter()
+    }
+
+    @Hears(Object.keys(ServicesE).filter((key: string) => key !== "companyRegistration").map((key: string) => ServicesE[key]))
+    async defaultService(@Ctx() ctx: any) {
+        ctx.state.service = ctx.message.text;
+        ctx.scene.enter(ScenesE.createApplication);
     }
 
     @Hears(NavigationE.menu)
