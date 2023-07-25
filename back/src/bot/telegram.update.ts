@@ -11,7 +11,7 @@ export class TelegramUpdate {
 
     @Start()
     async onStart(@Ctx() ctx: Context) {
-        await ctx.reply('Здравствуйте!');
+        await ctx.reply('Добрый день!');
         //@ts-ignore
         const scene = ctx.scene as SceneContextScene
         await scene.enter(ScenesE.registration)

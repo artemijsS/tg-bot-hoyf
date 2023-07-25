@@ -14,7 +14,7 @@ export class ShowServicesScene {
     @SceneEnter()
     async onEnter(@Ctx() ctx: any) {
         if (!await checkAuth(ctx, this.userService)) return;
-        await ctx.reply(`Что вас интересует?`,
+        await ctx.reply(`Какая услуга необходима?`,
             Markup.keyboard([
                 [
                     'Услуга 1',
