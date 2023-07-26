@@ -7,6 +7,7 @@ import { validate } from 'class-validator';
 import { plainToInstance } from "class-transformer";
 import { ChangeNameDto } from "./dto/changeName.dto";
 import { ChangeEmailDto } from "./dto/changeEmail.dto";
+import { ChangeUsernameDto } from "./dto/changeUsername.dto";
 
 
 @Injectable()
@@ -47,6 +48,11 @@ export class UserService {
   async changeEmail(changeEmailDto: ChangeEmailDto) {
     await this.validation(ChangeEmailDto, changeEmailDto);
     return this.userModel.findOneAndUpdate({ chatId: changeEmailDto.chatId }, { email: changeEmailDto.email }).select('-password');
+  }
+
+  async changeTgUsername(changeUsernameDto: ChangeUsernameDto) {
+    await this.validation(ChangeUsernameDto, changeUsernameDto);
+    return this.userModel.findOneAndUpdate({ chatId: changeUsernameDto.chatId }, { username: changeUsernameDto.username }).select('-password');
   }
 
   async getUsersByUsername(page: number = 0) {
