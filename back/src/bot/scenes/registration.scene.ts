@@ -9,6 +9,10 @@ import { NavigationE } from "../enums/navigation.enum";
 @Scene(ScenesE.registration)
 export class RegistrationScene {
 
+    private name = '';
+    private email = '';
+    private state = '';
+
     constructor(private userService: UserService) {}
 
     @SceneEnter()
@@ -19,8 +23,9 @@ export class RegistrationScene {
             ctx.scene.enter(ScenesE.services);
             return;
         }
-
-        ctx.session.state = 'NAME';
+        this.name = '';
+        this.email = '';
+        this.state = 'NAME';
         await ctx.reply('Необходимо зарегестрироватся\n\nВведите пожалуйста имя:', Markup.keyboard([
             NavigationE.restart
         ]).resize(true));
@@ -33,24 +38,28 @@ export class RegistrationScene {
 
     @Hears(/.+/)
     async onText(@Ctx() ctx: any) {
-        const currentState = ctx.session.state || 'NAME';
+        const currentState = this.state || 'NAME';
         switch (currentState) {
             case "NAME":
-                ctx.session.name = ctx.message.text;
-                ctx.session.state = 'EMAIL';
-                await ctx.replyWithHTML(`Имя - <b>${ctx.message.text}</b>\n\nВведите пожалуйста email:`);
+                this.name = ctx.message.text;
+                this.state = 'EMAIL';
+                await ctx.replyWithHTML(`Имя - <b>${this.name}</b>\n\nВведите пожалуйста email:`);
                 return;
             case "EMAIL":
-                ctx.session.email = ctx.message.text;
-                ctx.session.state = 'DONE';
-                const { name, email } = ctx.session;
+                this.email = ctx.message.text;
+                if (!this.name) {
+                    await sendError(ctx, "Что-то пошло не так, попробуйте снова");
+                    ctx.scene.reenter();
+                    return;
+                }
+                this.state = 'DONE';
                 const chatId = ctx.chat.id;
                 const username = ctx.from.username;
 
                 try {
                     const user = await this.userService.createUser({
-                        name,
-                        email,
+                        name: this.name,
+                        email: this.email,
                         chatId,
                         username
                     })
@@ -64,7 +73,7 @@ export class RegistrationScene {
 
                 return;
             default:
-                ctx.scene.leave();
+                ctx.scene.reenter();
         }
     }
 }
