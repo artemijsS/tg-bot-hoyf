@@ -4,6 +4,7 @@ import { sendError } from "../utils/errors";
 import { ScenesE } from "../enums/scenes.enum";
 import { Markup } from "telegraf";
 import { NavigationE } from "../enums/navigation.enum";
+import { ConfigE } from "../enums/config.enum";
 
 
 @Scene(ScenesE.registration)
@@ -54,7 +55,7 @@ export class RegistrationScene {
                 }
                 this.state = 'DONE';
                 const chatId = ctx.chat.id;
-                const username = ctx.from.username;
+                const username = ctx.from.username ? ctx.from.username : ConfigE.noUsername;
 
                 try {
                     const user = await this.userService.createUser({

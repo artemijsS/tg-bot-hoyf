@@ -11,6 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import { ServicesE } from "../../enums/services.enum";
 import { CountriesE } from "../../enums/countries.enum";
 import { EmailService } from "../../../email/email.service";
+import { ConfigE } from "../../enums/config.enum";
 
 
 @Scene(ScenesE.createApplication)
@@ -50,12 +51,14 @@ export class CreateApplicationScene {
     }
 
     async sendContactTypeSelect(ctx: any) {
+        const user = await this.userService.getByChatId(ctx.chat.id);
+        const types = [];
+        if (user.username !== ConfigE.noUsername)
+            types.push(Markup.button.callback(NavigationE.telegram, 'Telegram'))
+        types.push(Markup.button.callback(NavigationE.email, 'Email'))
         const msg = await ctx.replyWithHTML(`Укажите пожалуйста как удобнее связаться с вами?\n\n<i>После выбора, заявка будет отправлена нам</i>`,
             Markup.inlineKeyboard([
-                [
-                    Markup.button.callback(NavigationE.telegram, 'Telegram'),
-                    Markup.button.callback(NavigationE.email, 'Email')
-                ]
+                types
             ]));
         this.msgId = msg.message_id;
     }
@@ -104,6 +107,12 @@ export class CreateApplicationScene {
         this.contactType = ctx.update.callback_query.data;
         try {
             const user = await this.userService.getByChatId(ctx.chat.id);
+            if (user.username === ConfigE.noUsername && this.contactType === "Telegram") {
+                await sendError(ctx, "У вашего аккаунта не хватает telegram username, пожалуйста выберете другой способ связи");
+                await this.deleteInlineButtons(ctx, this.contactType);
+                await this.sendContactTypeSelect(ctx);
+                return;
+            }
             const application = await this.applicationService.createApplication({
                 user: user._id.toString(),
                 service: this.service,
