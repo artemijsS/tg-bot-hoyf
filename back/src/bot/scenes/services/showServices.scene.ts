@@ -41,12 +41,7 @@ export class ShowServicesScene {
             ]).resize(true));
     }
 
-    @Hears(ServicesE.companyRegistration)
-    async companyRegistration(@Ctx() ctx: any) {
-        ctx.scene.reenter()
-    }
-
-    @Hears(Object.keys(ServicesE).filter((key: string) => key !== "companyRegistration").map((key: string) => ServicesE[key]))
+    @Hears(Object.values(ServicesE))
     async defaultService(@Ctx() ctx: any) {
         ctx.state.service = ctx.message.text;
         ctx.scene.enter(ScenesE.createApplication);

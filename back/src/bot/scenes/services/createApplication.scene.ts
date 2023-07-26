@@ -8,6 +8,8 @@ import { sendSuccess } from "../../utils/success";
 import { sendError } from "../../utils/errors";
 import { ApplicationService } from "../../../application/application.service";
 import { ConfigService } from "@nestjs/config";
+import { ServicesE } from "../../enums/services.enum";
+import { CountriesE } from "../../enums/countries.enum";
 
 
 @Scene(ScenesE.createApplication)
@@ -16,6 +18,7 @@ export class CreateApplicationScene {
     private msgId: number = 0;
     private service: string = '';
     private contactType: string = '';
+    private country: string = '';
 
     constructor(private configService: ConfigService,
                 private userService: UserService,
@@ -30,9 +33,21 @@ export class CreateApplicationScene {
             return;
         }
         this.service = ctx.state.service;
+        this.country = '';
+        this.contactType = '';
         await ctx.replyWithHTML(`<b>${ctx.state.service}</b>`, Markup.keyboard([
             [NavigationE.back]
         ]).resize(true));
+
+        if (this.service === ServicesE.companyRegistration) {
+            await this.sendCountrySelect(ctx);
+        } else {
+            await this.sendContactTypeSelect(ctx);
+        }
+
+    }
+
+    async sendContactTypeSelect(ctx: any) {
         const msg = await ctx.replyWithHTML(`Укажите пожалуйста как удобнее связаться с вами?\n\n<i>После выбора, заявка будет отправлена нам</i>`,
             Markup.inlineKeyboard([
                 [
@@ -41,6 +56,38 @@ export class CreateApplicationScene {
                 ]
             ]));
         this.msgId = msg.message_id;
+    }
+
+    async sendCountrySelect(ctx: any) {
+        const countriesArray = Object.keys(CountriesE).map((key) => CountriesE[key]);
+        const countryButtons = countriesArray.reduce((acc: any[], country: string, index: number) => {
+            if (index % 2 === 0) {
+                acc.push([Markup.button.callback(country, country)]);
+            } else {
+                acc[acc.length - 1].push(Markup.button.callback(country, country));
+            }
+            return acc;
+        }, []);
+        countryButtons.push()
+        const msg = await ctx.replyWithHTML(`В какой стране вы планируете зарегистрировать компанию?`,
+            Markup.inlineKeyboard(
+                countryButtons
+            ));
+        this.msgId = msg.message_id;
+    }
+
+    @Action(Object.values(CountriesE))
+    async getCountry(@Ctx() ctx: any) {
+        if (!ctx.update.callback_query || !ctx.update.callback_query.data || !ctx.update.callback_query.message) {
+            await sendError(ctx, "Попробуйте заного");
+            return;
+        }
+        if (this.msgId !== ctx.update.callback_query.message.message_id) {
+            return;
+        }
+        this.country = ctx.update.callback_query.data;
+        await this.deleteInlineButtons(ctx, this.country);
+        await this.sendContactTypeSelect(ctx);
     }
 
     @Action(["Telegram", "Email"])
@@ -63,7 +110,9 @@ export class CreateApplicationScene {
             await sendSuccess(ctx, "Заявка успешно отправлена!");
             await ctx.replyWithHTML(`
 <b>Номер заяки - ${application.applicationNumber}</b>\n
-Услуга - ${application.service}\nИмя - ${user.name}
+Услуга - ${application.service}
+${this.country ? "Страна регистрации - " + this.country + "\n" : ""}
+Имя - ${user.name}
 Контакт для связи - ${application.contactType === "Telegram" ? "@" + user.username : user.email}
 `);
             delete ctx.state.service;
@@ -83,11 +132,18 @@ export class CreateApplicationScene {
 
     @SceneLeave()
     async sceneLeave(ctx: Context) {
+        if (this.contactType)
+            await this.deleteInlineButtons(ctx, this.contactType);
+        else
+            await this.deleteInlineButtons(ctx, "");
+    }
+
+    async deleteInlineButtons(ctx: any, text: string) {
         if (this.msgId !== 0 && ctx.chat?.id) {
             try {
                 const msg = await ctx.telegram.editMessageReplyMarkup(ctx.chat.id, this.msgId, undefined, null);
                 //@ts-ignore
-                const newText = msg.text + "\n\n<b>Вы выбрали - " + this.contactType + "</b>";
+                const newText = msg.text + (text ? "\n\n<b>Вы выбрали - " + text + "</b>" : "\n\n<b>Вы ничего не выбрали</b>");
                 await ctx.telegram.editMessageText(ctx.chat.id, this.msgId, undefined, newText, {
                     parse_mode: "HTML"
                 })
