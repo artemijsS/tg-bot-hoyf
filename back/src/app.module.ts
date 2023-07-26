@@ -4,6 +4,7 @@ import { TelegramModule } from "./bot/telegram.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "./user/user.module";
 import { ApplicationModule } from "./application/application.module";
+import { EmailModule } from "./email/email.module";
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { ApplicationModule } from "./application/application.module";
     MongooseModule.forRoot(process.env.MONGODB_URI),
     TelegramModule,
     UserModule,
-    ApplicationModule
+    ApplicationModule,
+    EmailModule
   ],
   controllers: [],
   providers: [],

@@ -10,6 +10,7 @@ import { ApplicationService } from "../../../application/application.service";
 import { ConfigService } from "@nestjs/config";
 import { ServicesE } from "../../enums/services.enum";
 import { CountriesE } from "../../enums/countries.enum";
+import { EmailService } from "../../../email/email.service";
 
 
 @Scene(ScenesE.createApplication)
@@ -22,7 +23,8 @@ export class CreateApplicationScene {
 
     constructor(private configService: ConfigService,
                 private userService: UserService,
-                private applicationService: ApplicationService
+                private applicationService: ApplicationService,
+                private emailService: EmailService,
     ) {}
 
     @SceneEnter()
@@ -105,17 +107,32 @@ export class CreateApplicationScene {
             const application = await this.applicationService.createApplication({
                 user: user._id.toString(),
                 service: this.service,
-                contactType: this.contactType
+                contactType: this.contactType,
+                country: this.country
             })
-            await sendSuccess(ctx, "Заявка успешно отправлена!");
+            await sendSuccess(ctx, "Заявка успешно сохранена!");
             await ctx.replyWithHTML(`
 <b>Номер заяки - ${application.applicationNumber}</b>\n
 Услуга - ${application.service}
 ${this.country ? "Страна регистрации - " + this.country + "\n" : ""}
 Имя - ${user.name}
-Контакт для связи - ${application.contactType === "Telegram" ? "@" + user.username : user.email}
+Выбранный контакт для связи - ${application.contactType === "Telegram" ? "@" + user.username : user.email}
 `);
             delete ctx.state.service;
+
+            this.emailService.sendApplicationEmail({
+                to: this.configService.get("COMPANY_EMAIL"),
+                service: application.service,
+                applicationNumber: application.applicationNumber,
+                country: application.country,
+                contactType: application.contactType,
+                username: user.username,
+                email: user.email,
+                name: user.name
+            }).catch(async () => {
+                await sendError(ctx, "Не получилось отправить заявку, попробуйте еще раз, или напишите пожалуйста нам на почту - " + this.configService.get("COMPANY_EMAIL"))
+            });
+
             ctx.scene.enter(ScenesE.menu);
         } catch (e) {
             console.log(e)

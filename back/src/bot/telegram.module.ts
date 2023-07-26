@@ -12,6 +12,7 @@ import { ShowServicesScene } from "./scenes/services/showServices.scene";
 import { WriteToUsScene } from "./scenes/settings/writeToUs.scene";
 import { CreateApplicationScene } from "./scenes/services/createApplication.scene";
 import { ApplicationModule } from "../application/application.module";
+import { EmailModule } from "../email/email.module";
 
 const sessions = new LocalSession({ database: 'session_db.json' })
 
@@ -27,7 +28,8 @@ const sessions = new LocalSession({ database: 'session_db.json' })
             inject: [ConfigService],
         }),
         UserModule,
-        ApplicationModule
+        ApplicationModule,
+        EmailModule
     ],
     controllers: [],
     providers: [
