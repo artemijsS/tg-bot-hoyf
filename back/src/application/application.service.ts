@@ -26,6 +26,9 @@ export class ApplicationService {
         return application;
     }
 
+    async getApplicationsByUser(userId: string): Promise<Application[]> {
+        return this.applicationModel.find({ user: userId });
+    }
 
     private async validation<T extends object>(dtoClass: new () => T, dto: any): Promise<T> {
         const dtoCheck = plainToInstance(dtoClass, dto);

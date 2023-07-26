@@ -8,5 +8,6 @@ export enum NavigationE {
     writeToUs = "Написать нам",
     restart = "❌ Начать с начала ❌",
     telegram = "📱 Telegram 📱",
-    email = "📧 Email 📧"
+    email = "📧 Email 📧",
+    findUserByUsername = "Пользователи"
 }

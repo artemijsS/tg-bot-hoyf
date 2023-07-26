@@ -5,5 +5,7 @@ export enum ScenesE {
     menu = "menuScene",
     changeInfoScene = "changeInfoScene",
     writeToUs = "writeToUsScene",
-    createApplication = "createApplicationScene"
+    createApplication = "createApplicationScene",
+    adminScene = "adminScene",
+    adminFindUser = "adminFindUserScene",
 }

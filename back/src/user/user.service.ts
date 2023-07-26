@@ -30,6 +30,10 @@ export class UserService {
     return this.userModel.findOne({ chatId: chatId }).exec();
   }
 
+  async getById(id: number): Promise<User> {
+    return this.userModel.findOne({ _id: id }).exec();
+  }
+
   async getAdminChatIds(): Promise<number[]> {
     const admins = await this.userModel.find({ role: "admin" }).exec();
     return admins.map((admin: User) => admin.chatId);
@@ -43,6 +47,17 @@ export class UserService {
   async changeEmail(changeEmailDto: ChangeEmailDto) {
     await this.validation(ChangeEmailDto, changeEmailDto);
     return this.userModel.findOneAndUpdate({ chatId: changeEmailDto.chatId }, { email: changeEmailDto.email }).select('-password');
+  }
+
+  async getUsersByUsername(page: number = 0) {
+    const limit = 8;
+    const userCount = await this.userModel.find().countDocuments();
+    const totalPages = Math.round(userCount / limit);
+    return {
+      users: await this.userModel.find().sort({createdAt: 1}).skip(page * limit).limit(limit),
+      page: page,
+      totalPages
+    };
   }
 
   async validation<T extends object>(dtoClass: new () => T, dto: any): Promise<T> {

@@ -13,6 +13,8 @@ import { WriteToUsScene } from "./scenes/settings/writeToUs.scene";
 import { CreateApplicationScene } from "./scenes/services/createApplication.scene";
 import { ApplicationModule } from "../application/application.module";
 import { EmailModule } from "../email/email.module";
+import { AdminScene } from "./scenes/admin/admin.scene";
+import { UsersAdminScene } from "./scenes/admin/users.scene";
 
 const sessions = new LocalSession({ database: 'session_db.json' })
 
@@ -40,7 +42,9 @@ const sessions = new LocalSession({ database: 'session_db.json' })
         SettingsScene,
         ShowServicesScene,
         WriteToUsScene,
-        CreateApplicationScene
+        CreateApplicationScene,
+        AdminScene,
+        UsersAdminScene
     ]
 })
 export class TelegramModule {}
